@@ -15,7 +15,7 @@
         </b-card-text>
         <div class="butt">
           <b-form-input  v-model="prod.max" :type="'number'" min="1" :max="prod.ProdInven"></b-form-input>
-          <b-button href="#" id="btnColor" v-on:click="anadirCarrito(prod.id_Prod, prod.max)">{{ponerComas("es-CO", "COP", 0, prod.Precio * max)}}</b-button>
+          <b-button href="#" id="btnColor" v-on:click="anadirCarrito(prod.id_Prod, prod.max)">{{ponerComas("es-CO", "COP", 0, prod.Precio * prod.max)}}</b-button>
         </div>
       </b-card>
       <div>
