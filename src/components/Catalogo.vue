@@ -35,10 +35,11 @@
               </div>
             </div>
             <div class="checkout">
-              <label>Total: {{ponerComas("es-CO", "COP", 0, total)}}</label>
+              <label v-if="descuento <= total">Total: {{ponerComas("es-CO", "COP", 0, total)}} , Con descuento: {{ponerComas("es-CO", "COP", 0, total-descuento)}}</label>
+              <label v-else>No puede añadir un descuento mayor al total!</label>
               <div>
                 <b-form-input v-model="descuento" class="checkout-form" :type="'number'" min="0" placeholder="Descuento"></b-form-input>
-                <b-button variant="success" class="checkout-btn">Comprar</b-button>
+                <b-button variant="success" v-if="itemscart > 0" class="checkout-btn" v-on:click="post">Comprar</b-button>
               </div>
             </div>
           </div>
@@ -58,10 +59,12 @@ export default {
       producto: null,
       productos: [],
       carrito:[],
+      prodList : "{",
       descuento: 0,
       total: 0,
       max: 1,
-      itemscart: 0
+      itemscart: 0,
+      responsePost: ""
     }
   },
   beforeMount: function (){
@@ -95,6 +98,8 @@ export default {
           alert(`Sin suficiente stock, el stock actual es de ${response.data.ProdInven}`);
         }else{
             este.carrito.push({id:id, cantidad:cuantity, img:response.data.LINKImg, titulo: response.data.nom_prod, precio: response.data.Precio});
+            este.prodList += `${id}:${cuantity}, `
+            console.log(este.prodList);
             este.total += total;
             este.itemscart += cuantity
             console.log(este.carrito[0], este.total)
@@ -108,6 +113,26 @@ export default {
         minimumFractionDigits: fractionDigits
       }).format(number);
       return formatted;
+    },
+    post: function (){
+      let token = localStorage.getItem("token_access");
+      let este = this;
+      este.prodList += "}";
+      console.log(this.descuento, this.prodList)
+      axios.post(
+          "https://p41g5be.herokuapp.com/venta/",
+          {
+            descuento: this.descuento,
+            productList: this.prodList,
+            factura:{
+              cliente: "...",
+            }
+          },
+          {headers: {'Authorization': `Bearer ${token}`}}
+      ).then((result) =>{
+        este.responsePost = result.data.response;
+        alert(este.responsePost);
+      })
     }
   }
 
