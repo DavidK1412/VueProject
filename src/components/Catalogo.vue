@@ -3,7 +3,7 @@
     <div class="productsrow">
       <b-card v-for="prod in productos" v-bind:key="prod.id"
         :title="prod.nom_prod"
-        img-src="https://picsum.photos/600/300/?image=25"
+        :img-src="prod.LINKImg"
         img-alt="Image"
         img-top
         tag="article"
@@ -84,6 +84,9 @@ export default {
             este.productos = response.data.map(prod =>{
               prod.max = 0;
               return prod;
+            });
+            este.productos = este.productos.sort((a, b) => {
+              return a.id_Prod - b.id_Prod;
             });
           })
     },

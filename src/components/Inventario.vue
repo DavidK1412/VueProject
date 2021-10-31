@@ -59,6 +59,9 @@ export default {
       axios.get('https://p41g5be.herokuapp.com/producto/', {headers: {'Authorization': `Bearer ${token}`}})
           .then(function(response){
             este.productos = response.data;
+            este.productos = este.productos.sort((a, b) => {
+              return a.id_Prod - b.id_Prod;
+            });
           })
     }
   },

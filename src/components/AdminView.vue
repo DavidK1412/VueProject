@@ -9,9 +9,16 @@
         <Inventario></Inventario></b-tab>
       <b-tab>
         <template slot="title">
-          <b-icon icon="journal-bookmark-fill"></b-icon> Admin. Productos
+          <b-icon icon="bag-check-fill"></b-icon> Admin. Productos
         </template>
+        <AdminProductos></AdminProductos>
       </b-tab>
+  <!--<b-tab>
+        <template slot="title">
+          <b-icon icon="book"></b-icon> Facturas
+        </template>
+        <SelectBill></SelectBill>
+      </b-tab>-->
     </b-tabs>
   </b-card>
 </div>
@@ -19,11 +26,15 @@
 
 <script>
 import Inventario from "@/components/Inventario";
+import AdminProductos from "@/components/AdminProductos";
+//import SelectBill from "@/components/SelectBill";
 
 export default {
   name: "AdminView",
   components: {
     Inventario,
+    AdminProductos,
+    //SelectBill
   }
 }
 </script>
