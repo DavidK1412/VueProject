@@ -39,13 +39,42 @@
               <label v-else>No puede añadir un descuento mayor al total!</label>
               <div>
                 <b-form-input v-model="descuento" class="checkout-form" :type="'number'" min="0" placeholder="Descuento"></b-form-input>
-                <b-button variant="success" v-if="itemscart > 0" class="checkout-btn" v-on:click="post">Comprar</b-button>
+                <b-button v-b-modal.modal-xl variant="success" v-if="itemscart > 0" class="checkout-btn" v-on:click="post">Comprar</b-button>
               </div>
             </div>
           </div>
         </b-sidebar>
       </div>
     </div>
+    <b-modal id="modal-xl" size="xl" :title="`Factura # ${venta.id + 1}`" ok-only ok-variant="danger" ok-title="Cerrar">
+      <div class="header">
+        <label class="label-header">ID Venta: <b>{{venta.id + 1}}</b></label>
+        <label class="label-header">Fecha de venta: <b>{{venta.fecha}}</b></label>
+        <label class="label-header">ID Factura: <b>{{venta.id + 1}}</b></label>
+        <hr>
+      </div>
+      <div class="cartt" v-for="item in carrito" v-bind:key="item.id">
+        <div class="cartimg">
+          <b-img :src="item.img" fluid></b-img>
+          <span>.</span>
+        </div>
+        <div class="itemscart">
+          <label>{{item.titulo}}</label>
+          <br>
+          <label>Cantidad: {{item.cantidad}}</label>
+          <br>
+          <label>Precio: {{ponerComas("es-CO", "COP", 0, item.precio*item.cantidad)}}</label>
+        </div>
+        <hr>
+      </div>
+      <div class="prices">
+        <label>SubTotal: <b>{{ponerComas("es-CO", "COP", 0, total)}}</b></label>
+        <br>
+        <label>Descuento: <b>{{ponerComas("es-CO", "COP", 0, descuento)}}</b></label>
+        <br>
+        <label>Total: <b>{{ponerComas("es-CO", "COP", 0, total - descuento)}}</b></label>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -64,11 +93,15 @@ export default {
       total: 0,
       max: 1,
       itemscart: 0,
-      responsePost: ""
+      responsePost: "",
+      venta: {
+
+      },
     }
   },
   beforeMount: function (){
     this.getProds();
+    this.getVentas();
   },
   methods:{
     getProds: function (){
@@ -136,6 +169,23 @@ export default {
         este.responsePost = result.data.response;
         alert(este.responsePost);
       })
+    },
+    getVentas: function (){
+      if(localStorage.getItem("token_access") === null || localStorage.getItem("token_refresh") === null){
+        this.$emit('logOut');
+        return;
+      }
+      let este = this;
+      let token = localStorage.getItem("token_access");
+
+      axios.get('https://p41g5be.herokuapp.com/venta/', {headers: {'Authorization': `Bearer ${token}`}})
+          .then(function(response){
+            let time = Date.now();
+            let hoy = new Date(time);
+            este.venta = {id: response.data[response.data.length - 1].id,
+            fecha: hoy.toISOString()}
+            console.log(este.venta);
+          })
     }
   }
 
@@ -208,5 +258,17 @@ export default {
 }
 .checkout-btn{
   width: 35%;
+}
+
+.header{
+.padding: 5px;
+}
+
+.label-header{
+  margin-right: 193px;
+}
+
+.prices{
+  float: right;
 }
 </style>
